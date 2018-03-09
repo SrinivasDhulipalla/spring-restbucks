@@ -39,6 +39,7 @@ import org.springsource.restbucks.payment.CreditCardNumber;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -75,6 +76,7 @@ class JacksonCustomizations {
 			setMixInAnnotation(CreditCardNumber.class, CreditCardNumberMixin.class);
 		}
 
+		@JsonIgnoreProperties("domainEvents")
 		@JsonAutoDetect(isGetterVisibility = JsonAutoDetect.Visibility.NONE)
 		static abstract class OrderMixin {
 

@@ -20,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.ResourceProcessor;
@@ -42,9 +41,7 @@ class CoreOrderResourceProcessor implements ResourceProcessor<Resource<Order>> {
 	public static final String UPDATE_REL = "update";
 
 	private final @NonNull EntityLinks entityLinks;
-	
-	@Autowired
-	private OrderService orderService;
+	private final @NonNull OrderService orderService;
 
 	/* 
 	 * (non-Javadoc)
@@ -59,7 +56,7 @@ class CoreOrderResourceProcessor implements ResourceProcessor<Resource<Order>> {
 		if (links.contains("cancel")) {
 			resource.add(entityLinks.linkForSingleResource(order).withRel(CANCEL_REL));
 		}
-    if (links.contains("update")) {
+		if (links.contains("update")) {
 			resource.add(entityLinks.linkForSingleResource(order).withRel(UPDATE_REL));
 		}
 

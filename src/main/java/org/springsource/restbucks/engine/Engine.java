@@ -23,13 +23,11 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.event.TransactionalEventListener;
 import org.springsource.restbucks.order.Order;
 import org.springsource.restbucks.order.OrderRepository;
-import org.springsource.restbucks.order.OrderService;
 import org.springsource.restbucks.payment.OrderPaid;
 
 /**
@@ -47,16 +45,13 @@ class Engine {
 	private final @NonNull OrderRepository repository;
 	private final Set<Order> ordersInProgress = Collections.newSetFromMap(new ConcurrentHashMap<Order, Boolean>());
 
-	@Autowired
-	private OrderService orderService;
-	
 	@Async
 	@TransactionalEventListener
 	public void handleOrderPaidEvent(OrderPaid event) {
 
-		Order order = repository.findOne(event.getOrderId());
-		orderService.markInPreparation(order);
-//		order = repository.save(order.markInPreparation());
+		Order order = repository.findById(event.getOrderId())
+				.orElseThrow(() -> new IllegalStateException("No order found for id: " + event.getOrderId()));
+		order = repository.save(order.markInPreparation());
 
 		ordersInProgress.add(order);
 
@@ -68,8 +63,7 @@ class Engine {
 			throw new RuntimeException(e);
 		}
 
-		orderService.markPrepared(order);
-//		order = repository.save(order.markPrepared());
+		order = repository.save(order.markPrepared());
 
 		ordersInProgress.remove(order);
 
